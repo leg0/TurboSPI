@@ -3,7 +3,7 @@
 
 #ifdef __AVR__
 //------------------------------------------------------------------------------
-void TurboSPI::Begin()
+void TurboSPI::Begin() const
 {
 #ifdef __AVR_ATmega328P__
 	// Save a few bytes for 328 CPU - gcc optimizes single bit '|' to sbi.
@@ -25,7 +25,7 @@ void TurboSPI::Begin()
 	Init(2);
 }
 //------------------------------------------------------------------------------
-void TurboSPI::Init(uint8_t divisor)
+void TurboSPI::Init(uint8_t divisor) const
 {
 	uint8_t b = 2;
 	uint8_t r = 0;
@@ -38,7 +38,7 @@ void TurboSPI::Init(uint8_t divisor)
 	SPSR = r & 1 ? 0 : 1 << SPI2X;
 }
 //------------------------------------------------------------------------------
-uint8_t TurboSPI::Receive()
+uint8_t TurboSPI::Receive() const
 {
 	SPDR = 0XFF;
 	while (!(SPSR & (1 << SPIF)))
@@ -46,7 +46,7 @@ uint8_t TurboSPI::Receive()
 	return SPDR;
 }
 //------------------------------------------------------------------------------
-uint8_t TurboSPI::Receive(uint8_t * buf, size_t n)
+uint8_t TurboSPI::Receive(uint8_t * buf, size_t n) const
 {
 	if (n-- == 0)
 	{
@@ -67,14 +67,14 @@ uint8_t TurboSPI::Receive(uint8_t * buf, size_t n)
 	return 0;
 }
 //------------------------------------------------------------------------------
-void TurboSPI::Send(uint8_t data)
+void TurboSPI::Send(uint8_t data) const
 {
 	SPDR = data;
 	while (!(SPSR & (1 << SPIF)))
 		;
 }
 //------------------------------------------------------------------------------
-void TurboSPI::Send(const uint8_t * buf, size_t n)
+void TurboSPI::Send(const uint8_t * buf, size_t n) const
 {
 	if (n == 0)
 	{
@@ -102,31 +102,23 @@ void TurboSPI::Send(const uint8_t * buf, size_t n)
 }
 
 //////////////////////////////////////////////////////////////////////////
-DigitalPin::DigitalPin()
-	: m_Pin(0)
-	, m_Port(0)
-	, m_Mask(0)
-{
-}
+DigitalPin::DigitalPin(uint8_t pinID)
+	: m_Pin(pinID)
+	, m_Port(portOutputRegister(digitalPinToPort(pinID)))
+	, m_Mask(digitalPinToBitMask(pinID))
+{ }
 
-void DigitalPin::Begin(uint8_t pinID)
-{
-	m_Pin = pinID;
-	m_Port = portOutputRegister(digitalPinToPort(pinID));
-	m_Mask = digitalPinToBitMask(pinID);
-}
-
-void DigitalPin::PinMode(uint8_t dwMode)
+void DigitalPin::PinMode(uint8_t dwMode) const
 {
 	pinMode(m_Pin, dwMode);
 }
 
-void DigitalPin::High()
+void DigitalPin::High() const
 {
 	*m_Port |= m_Mask;
 }
 
-void DigitalPin::Low()
+void DigitalPin::Low() const
 {
 	*m_Port &= ~m_Mask;
 }

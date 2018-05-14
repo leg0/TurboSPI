@@ -8,17 +8,17 @@ class TurboSPI
 {
 public:
 	/** Initialize the SPI bus */
-	void Begin();
+	void Begin() const;
 	/** Set SPI options.
 	 *
 	 * \param[in] divisor SCK clock divider relative to the system clock.
 	 */
-	void Init(uint8_t divisor);
+	void Init(uint8_t divisor) const;
 	/** Receive a byte.
 	 *
 	 * \return The byte.
 	 */
-	uint8_t Receive();
+	uint8_t Receive() const;
 	/** Receive multiple bytes.
 	 *
 	 * \param[out] buf Buffer to receive the data.
@@ -26,37 +26,36 @@ public:
 	 *
 	 * \return Zero for no error or nonzero error code.
 	 */
-	uint8_t Receive(uint8_t * buf, size_t n);
+	uint8_t Receive(uint8_t * buf, size_t n) const;
 	/** Send a byte.
 	 *
 	 * \param[in] data Byte to send
 	 */
-	void Send(uint8_t data);
+	void Send(uint8_t data) const;
 	/** Send multiple bytes.
 	 *
 	 * \param[in] buf Buffer for data to be sent.
 	 * \param[in] n Number of bytes to send.
 	 */
-	void Send(const uint8_t * buf, size_t n);
+	void Send(const uint8_t * buf, size_t n) const;
 };
 
 class DigitalPin
 {
 public:
-	DigitalPin();
+	explicit DigitalPin(uint8_t pinID);
 
-	void Begin(uint8_t pinID);
-	void PinMode(uint8_t dwMode);
+	void PinMode(uint8_t dwMode) const;
 
-	void High();
-	void Low();
+	void High() const;
+	void Low() const;
 	
-	int DigitalRead()
+	int DigitalRead() const
 	{
 		return digitalRead(m_Pin);
 	}
 
-	void AnalogWrite(int val)
+	void AnalogWrite(int val) const
 	{
 		analogWrite(m_Pin, val);
 	}

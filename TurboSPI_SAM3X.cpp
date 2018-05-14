@@ -104,7 +104,7 @@ static inline uint8_t SPI_Transfer(uint8_t b)
 }
 
 //------------------------------------------------------------------------------
-void TurboSPI::Begin()
+void TurboSPI::Begin() const
 {
 	PIO_Configure(
 		g_APinDescription[PIN_SPI_MOSI].pPort,
@@ -142,7 +142,7 @@ void TurboSPI::Begin()
 
 //------------------------------------------------------------------------------
 //  initialize SPI controller
-void TurboSPI::Init(uint8_t sckDivisor)
+void TurboSPI::Init(uint8_t sckDivisor) const
 {
 	uint8_t scbr = sckDivisor;
 	Spi* pSpi = SPI0;
@@ -160,14 +160,14 @@ void TurboSPI::Init(uint8_t sckDivisor)
 
 //------------------------------------------------------------------------------
 /** SPI receive a byte */
-uint8_t TurboSPI::Receive()
+uint8_t TurboSPI::Receive() const
 {
 	return SPI_Transfer(0XFF);
 }
 
 //------------------------------------------------------------------------------
 /** SPI receive multiple bytes */
-uint8_t TurboSPI::Receive(uint8_t * buf, size_t n)
+uint8_t TurboSPI::Receive(uint8_t * buf, size_t n) const
 {
 	Spi* pSpi = SPI0;
 	int rtn = 0;
@@ -207,13 +207,13 @@ uint8_t TurboSPI::Receive(uint8_t * buf, size_t n)
 
 //------------------------------------------------------------------------------
 /** SPI send a byte */
-void TurboSPI::Send(uint8_t b)
+void TurboSPI::Send(uint8_t b) const
 {
 	SPI_Transfer(b);
 }
 
 //------------------------------------------------------------------------------
-void TurboSPI::Send(const uint8_t * buf, size_t n)
+void TurboSPI::Send(const uint8_t * buf, size_t n) const
 {
 	Spi* pSpi = SPI0;
 #if USE_SAM3X_DMAC
@@ -246,31 +246,23 @@ void TurboSPI::Send(const uint8_t * buf, size_t n)
 }
 
 //////////////////////////////////////////////////////////////////////////
-DigitalPin::DigitalPin()
-	: m_Pin(0)
-	, m_Port(0)
-	, m_Mask(0)
-{
-}
+DigitalPin::DigitalPin(uint8_t pinID)
+	: m_Pin(pinID)
+	, m_Port(digitalPinToPort(pinID))
+	, m_Mask(digitalPinToBitMask(pinID))
+{ }
 
-void DigitalPin::Begin(uint8_t pinID)
-{
-	m_Pin = pinID;
-	m_Port = digitalPinToPort(m_Pin);
-	m_Mask = digitalPinToBitMask(m_Pin);
-}
-
-void DigitalPin::PinMode(uint8_t dwMode)
+void DigitalPin::PinMode(uint8_t dwMode) const
 {
 	pinMode(m_Pin, dwMode);
 }
 
-void DigitalPin::High()
+void DigitalPin::High() const
 {
 	m_Port->PIO_SODR |= m_Mask;
 }
 
-void DigitalPin::Low()
+void DigitalPin::Low() const
 {
 	m_Port->PIO_CODR |= m_Mask;
 }
